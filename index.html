@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ยืมดี 🎒 ระบบยืม-คืนอุปกรณ์</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Tahoma,Arial,sans-serif;background:linear-gradient(135deg,#fff0f6,#eef5ff,#edfff5);color:#303650}
+header{padding:22px 16px;text-align:center;background:#fff9;border-bottom:1px solid #fff}
+header h1{margin:0;color:#7665cf;font-size:30px}
+header p{margin:8px 0 0;color:#777}
+main{max-width:1000px;margin:20px auto;padding:0 14px 35px}
+.hero{background:linear-gradient(120deg,#ffdeec,#dfeaff,#dcf9e9);padding:24px;border-radius:25px;margin-bottom:18px}
+.hero h2{margin:0 0 8px;font-size:25px}.hero p{margin:0}
+.tabs{display:flex;gap:9px;margin:16px 0;flex-wrap:wrap}
+button{border:0;border-radius:12px;padding:11px 15px;font-weight:bold;cursor:pointer;font-size:14px}
+.tab{background:white;color:#635c85}.tab.active,.primary{background:#7969d6;color:white}
+.card{background:#ffffffed;border-radius:21px;padding:20px;margin-bottom:16px;box-shadow:0 8px 25px #4b528011}
+h3{margin-top:0}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:block;font-weight:bold;font-size:14px;margin:10px 0 6px}
+input,select,textarea{width:100%;padding:11px;border:1px solid #e1e2ef;border-radius:11px;font:inherit;background:white}
+textarea{min-height:75px;resize:vertical}
+button:hover{filter:brightness(.97)}
+.full{width:100%;margin-top:14px}
+.soft{background:#eeeaff;color:#6254b8}
+.green{background:#dcf8e9;color:#276849}
+.red{background:#ffe4ec;color:#a23d5a}
+.hidden{display:none!important}
+.notice{background:#f1edff;color:#6054a8;padding:12px;border-radius:12px;font-size:14px;margin:12px 0}
+.item{background:#fff;border:1px solid #ececf4;border-radius:15px;padding:14px;margin-top:10px;overflow-wrap:anywhere}
+.item h4{margin:0 0 8px}
+.item p{font-size:14px;line-height:1.6;margin:5px 0}
+.badge{display:inline-block;padding:5px 10px;border-radius:30px;background:#fff0c8;color:#85620b;font-size:12px;font-weight:bold}
+.ok{background:#dcf8e9;color:#28684a}.no{background:#ffe4ec;color:#a23d5a}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+.actions button{padding:8px 10px;font-size:12px}
+.muted{font-size:13px;color:#777}
+footer{text-align:center;padding:20px;color:#888;font-size:12px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.hero h2{font-size:22px}.card{padding:15px}header h1{font-size:26px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎒 ยืมดี</h1>
+<p>ระบบยืม–คืนอุปกรณ์ห้องเรียน ✨</p>
+</header>
+<main>
+<div class="hero">
+<h2>ยืมง่าย คืนสบาย 💖</h2>
+<p>ส่งคำขอ ติดตามการอนุมัติ และจัดการอุปกรณ์ได้ในที่เดียว</p>
+</div>
+
+<div class="tabs">
+<button class="tab active" onclick="showPage('student',this)">🧑‍🎓 นักเรียน</button>
+<button class="tab" onclick="showPage('teacher',this)">🧑‍🏫 ครู / ผู้ดูแล</button>
+</div>
+
+<section id="student">
+<div class="grid">
+<div class="card">
+<h3>📝 ส่งคำขอยืม</h3>
+<div class="notice">ส่งคำขอและรอครูอนุมัติก่อนมารับอุปกรณ์</div>
+<form id="borrowForm">
+<label>ชื่อ–นามสกุล</label>
+<input id="name" required placeholder="ชื่อและนามสกุลนักเรียน">
+<label>ชั้น / ห้อง</label>
+<input id="room" required placeholder="เช่น ม.1/2">
+<label>อุปกรณ์ที่ต้องการ</label>
+<input id="equipment" required placeholder="เช่น Arduino Uno">
+<label>จำนวน</label>
+<input id="quantity" type="number" min="1" value="1" required>
+<label>วันที่กำหนดคืน</label>
+<input id="due" type="date" required>
+<label>เหตุผลที่ขอยืม</label>
+<textarea id="reason" required placeholder="นำไปใช้ทำกิจกรรมหรือโครงงาน"></textarea>
+<button class="primary full">💌 ส่งคำขอยืม</button>
+</form>
+</div>
+
+<div class="card">
+<h3>🔎 ติดตามคำขอ</h3>
+<label>ชื่อ–นามสกุลที่ใช้ส่งคำขอ</label>
+<input id="searchName" placeholder="กรอกชื่อให้ตรงกับคำขอ">
+<button class="soft full" onclick="findMine()">ค้นหาสถานะของฉัน</button>
+<div id="mine"></div>
+</div>
+</div>
+</section>
+
+<section id="teacher" class="hidden">
+<div class="card" id="login">
+<h3>🔐 เข้าสู่ระบบครู</h3>
+<div class="notice">บัญชีทดลอง: teacher / Teach1234</div>
+<form id="loginForm">
+<label>ชื่อผู้ใช้</label><input id="username" value="teacher" required>
+<label>รหัสผ่าน</label><input id="password" type="password" required>
+<button class="primary full">เข้าสู่ระบบ</button>
+</form>
+</div>
+<div id="panel" class="hidden">
+<div class="card">
+<h3>📋 รายการคำขอยืม</h3>
+<p id="summary" class="muted"></p>
+<button class="soft" onclick="exportCSV()">📊 ส่งออก CSV</button>
+<button class="red" onclick="logout()">ออกจากระบบ</button>
+<div id="requests"></div>
+</div>
+</div>
+</section>
+</main>
+<footer>ยืมดี 💗 เวอร์ชันทดลอง • ข้อมูลจัดเก็บในเบราว์เซอร์นี้</footer>
+
+<script>
+const KEY='yืมดี_equipment_requests';
+let data=[];
+try{data=JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){data=[]}
+const statuses=['รอตรวจสอบ','อนุมัติแล้ว','ปฏิเสธ','พร้อมให้รับ','ยืมอยู่','คืนแล้ว'];
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function showPage(id,btn){
+document.getElementById('student').classList.toggle('hidden',id!=='student');
+document.getElementById('teacher').classList.toggle('hidden',id!=='teacher');
+document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b===btn))
+}
+function badge(s){
+let cls=['อนุมัติแล้ว','พร้อมให้รับ','คืนแล้ว'].includes(s)?'ok':s==='ปฏิเสธ'?'no':'';
+return '<span class="badge '+cls+'">'+esc(s)+'</span>'
+}
+document.getElementById('borrowForm').addEventListener('submit',e=>{
+e.preventDefault();
+data.unshift({
+id:Date.now().toString(36),
+name:document.getElementById('name').value.trim(),
+room:document.getElementById('room').value.trim(),
+equipment:document.getElementById('equipment').value.trim(),
+quantity:document.getElementById('quantity').value,
+due:document.getElementById('due').value,
+reason:document.getElementById('reason').value.trim(),
+status:'รอตรวจสอบ',reply:'',created:new Date().toLocaleString('th-TH')
+});
+save();
+document.getElementById('searchName').value=document.getElementById('name').value.trim();
+e.target.reset();
+document.getElementById('quantity').value=1;
+findMine();
+alert('ส่งคำขอเรียบร้อย 💌 รอครูตรวจสอบได้เลย');
+});
+function findMine(){
+let n=document.getElementById('searchName').value.trim().toLowerCase();
+let list=data.filter(r=>r.name.toLowerCase()===n);
+document.getElementById('mine').innerHTML=!n?'<p class="muted">กรอกชื่อเพื่อค้นหา</p>':list.length?list.map(r=>`
+<div class="item"><h4>${esc(r.equipment)} × ${esc(r.quantity)} ${badge(r.status)}</h4>
+<p>กำหนดคืน: ${esc(r.due)}</p>
+<p>สถานะ: ${esc(r.status)}</p>
+${r.reply?'<p>ข้อความจากครู: '+esc(r.reply)+'</p>':''}
+${r.status==='พร้อมให้รับ'?'<p>🎉 อนุมัติแล้ว ติดต่อครูเพื่อรับอุปกรณ์</p>':''}
+${r.status==='ยืมอยู่'?'<p>📦 บันทึกการรับอุปกรณ์แล้ว</p>':''}
+${r.status==='คืนแล้ว'?'<p>🌷 ครูยืนยันการคืนเรียบร้อย</p>':''}
+</div>`).join(''):'<p class="muted">ไม่พบคำขอ กรุณาตรวจสอบชื่อ</p>';
+}
+document.getElementById('loginForm').addEventListener('submit',e=>{
+e.preventDefault();
+if(document.getElementById('username').value==='teacher'&&document.getElementById('password').value==='Teach1234'){
+document.getElementById('login').classList.add('hidden');
+document.getElementById('panel').classList.remove('hidden');
+render()
+}else alert('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง');
+});
+function logout(){
+document.getElementById('panel').classList.add('hidden');
+document.getElementById('login').classList.remove('hidden');
+document.getElementById('password').value=''
+}
+function render(){
+document.getElementById('summary').textContent='คำขอทั้งหมด '+data.length+' รายการ • รอตรวจสอบ '+data.filter(r=>r.status==='รอตรวจสอบ').length+' รายการ';
+document.getElementById('requests').innerHTML=data.length?data.map(r=>`
+<div class="item"><h4>${esc(r.equipment)} × ${esc(r.quantity)} ${badge(r.status)}</h4>
+<p>นักเรียน: ${esc(r.name)} (${esc(r.room)})</p>
+<p>เหตุผล: ${esc(r.reason)}</p><p>กำหนดคืน: ${esc(r.due)}</p>
+<label>สถานะ</label><select id="status-${r.id}">${statuses.map(s=>'<option '+(r.status===s?'selected':'')+'>'+s+'</option>').join('')}</select>
+<label>ข้อความถึงนักเรียน</label><input id="reply-${r.id}" value="${esc(r.reply)}" placeholder="เช่น มารับอุปกรณ์ได้ที่ห้องพักครู">
+<div class="actions">
+<button class="primary" onclick="updateRequest('${r.id}')">บันทึก</button>
+<button class="green" onclick="quick('${r.id}','พร้อมให้รับ')">อนุมัติ / แจ้งรับของ</button>
+<button class="soft" onclick="quick('${r.id}','ยืมอยู่')">ยืนยันส่งมอบ</button>
+<button class="soft" onclick="quick('${r.id}','คืนแล้ว')">ยืนยันคืน</button>
+<button class="red" onclick="removeRequest('${r.id}')">ลบ</button>
+</div></div>`).join(''):'<p class="muted">ยังไม่มีคำขอยืม</p>'
+}
+function updateRequest(id){
+let r=data.find(x=>x.id===id);if(!r)return;
+r.status=document.getElementById('status-'+id).value;
+r.reply=document.getElementById('reply-'+id).value.trim();
+save();render()
+}
+function quick(id,status){
+let r=data.find(x=>x.id===id);if(!r)return;
+r.status=status;
+if(!r.reply)r.reply=status==='พร้อมให้รับ'?'อนุมัติแล้ว ติดต่อครูเพื่อมารับอุปกรณ์':status==='ยืมอยู่'?'ครูยืนยันการส่งมอบอุปกรณ์แล้ว':'ครูยืนยันการคืนอุปกรณ์แล้ว';
+save();render()
+}
+function removeRequest(id){
+if(confirm('ยืนยันการลบคำขอนี้?')){data=data.filter(r=>r.id!==id);save();render()}
+}
+function exportCSV(){
+let rows=[['ชื่อ','ชั้น','อุปกรณ์','จำนวน','กำหนดคืน','เหตุผล','สถานะ','ข้อความครู'],...data.map(r=>[r.name,r.room,r.equipment,r.quantity,r.due,r.reason,r.status,r.reply])];
+let csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(',')).join('\r\n');
+let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download='รายการยืมอุปกรณ์.csv';a.click();URL.revokeObjectURL(a.href)
+}
+</script>
+</body>
+</html>
